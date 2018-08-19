@@ -17,17 +17,12 @@ type Node interface {
 // be embeded into all node definitions
 type BaseNode struct {
 	BaseComponent
-	ports PortCatalog
-}
-
-// Ports returns a copy of the port catalog of this node
-func (n *BaseNode) Ports() PortCatalog {
-	return n.ports.copy()
+	PortCatalog
 }
 
 func (n *BaseNode) initialize(self reflect.Value) {
 
-	n.ports = PortCatalog{}
+	n.PortCatalog = PortCatalog{}
 	n.catalogInPorts(self)
 	n.catalogOutPorts(self)
 
@@ -44,7 +39,7 @@ func (n *BaseNode) catalogInPorts(self reflect.Value) {
 			continue
 		}
 
-		n.ports.Ins = append(n.ports.Ins, &Port{
+		n.Ins = append(n.Ins, &Port{
 			Name: strings.TrimPrefix(name, inPortNamePrefix),
 			core: NewInPortCore(self.Method(i)),
 		})
@@ -82,7 +77,7 @@ func (n *BaseNode) catalogOutPorts(self reflect.Value) {
 		}
 
 		name := strings.TrimPrefix(field.Name, outPortNamePrefix)
-		n.ports.Outs = append(n.ports.Outs, &Port{
+		n.Outs = append(n.Outs, &Port{
 			Name: name,
 			core: core,
 		})

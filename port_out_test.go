@@ -19,7 +19,7 @@ func TestOutPortCore_AddReceiver_InvalidType(t *testing.T) {
 	graph.Add("String", strNode)
 	graph.Add("Int", intNode)
 
-	strNode.Ports().Out("Value").Core().AddReceiver(intNode.Ports().In("Value"))
+	strNode.Out("Value").Core().AddReceiver(intNode.In("Value"))
 
 }
 
@@ -29,7 +29,7 @@ func TestOutPortCore_AddReceiver_ReceiverIn(t *testing.T) {
 	strNode := new(StringNode)
 	graph.Add("Source", strNode)
 
-	valPort := strNode.Ports().Out("Value")
+	valPort := strNode.Out("Value")
 
 	err := valPort.Core().AddReceiver(valPort)
 	if err == nil {
