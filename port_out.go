@@ -14,7 +14,8 @@ type OutPortCore struct {
 	dataType reflect.Type
 
 	// the source channel of this port
-	channel reflect.Value
+	channel           reflect.Value
+	channelBufferSize int
 
 	// functions that accept a single parameter of the same type
 	// as this port's driving channel
@@ -23,8 +24,9 @@ type OutPortCore struct {
 
 // NewOutPortCore initializes a port core for an output port
 // driven by the given struct field. 'chanField' must be
-// a field whose type is a send-only channel
-func NewOutPortCore(chanField reflect.StructField) (*OutPortCore, error) {
+// a field whose type is a send-only channel. 'bufferSize' is the
+// size of buffer to use for the newly created channel
+func NewOutPortCore(chanField reflect.StructField, bufferSize int) (*OutPortCore, error) {
 
 	// must be a channel
 	if chanField.Type.Kind() != reflect.Chan {
@@ -44,7 +46,7 @@ func NewOutPortCore(chanField reflect.StructField) (*OutPortCore, error) {
 	// create a channel we need to define the bidirectional type
 	chanType := reflect.ChanOf(reflect.BothDir, core.dataType)
 
-	core.channel = reflect.MakeChan(chanType, 0) // TODO: support buffers
+	core.channel = reflect.MakeChan(chanType, bufferSize)
 	go func() {
 		alive := true
 		for alive {

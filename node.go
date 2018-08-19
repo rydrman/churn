@@ -17,7 +17,7 @@ type Node interface {
 	// or nil if no port exists with that name
 	Out(name string) *Port
 
-	initialize(self reflect.Value)
+	initialize(self reflect.Value, channelBufferSize int)
 }
 
 // BaseNode contains the core node logic that must
@@ -27,11 +27,11 @@ type BaseNode struct {
 	PortCatalog
 }
 
-func (n *BaseNode) initialize(self reflect.Value) {
+func (n *BaseNode) initialize(self reflect.Value, channelBufferSize int) {
 
 	n.PortCatalog = PortCatalog{}
 	n.catalogInPorts(self)
-	n.catalogOutPorts(self)
+	n.catalogOutPorts(self, channelBufferSize)
 
 }
 
@@ -66,7 +66,7 @@ func (n *BaseNode) catalogInPorts(self reflect.Value) {
 
 }
 
-func (n *BaseNode) catalogOutPorts(self reflect.Value) {
+func (n *BaseNode) catalogOutPorts(self reflect.Value, channelBufferSize int) {
 
 	selfType := self.Type()
 	selfKind := selfType.Kind()
@@ -89,7 +89,7 @@ func (n *BaseNode) catalogOutPorts(self reflect.Value) {
 
 		// a returned error signifies that this field did not
 		// meet the final requirements, so we move on
-		core, err := NewOutPortCore(field)
+		core, err := NewOutPortCore(field, channelBufferSize)
 		if err != nil {
 			continue
 		}

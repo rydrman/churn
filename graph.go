@@ -22,13 +22,21 @@ type Graph struct {
 	BaseComponent
 	components     map[string]Component
 	componentMutex sync.Mutex
+
+	channelBufferSize int
 }
 
 // NewGraph initializes a new Graph instance
-func NewGraph() *Graph {
-	return &Graph{
+func NewGraph(options ...GraphOption) *Graph {
+
+	g := &Graph{
 		components: make(map[string]Component),
 	}
+	for _, option := range options {
+		option.Apply(g)
+	}
+	return g
+
 }
 
 // SafeAdd adds the given component to this graph. If a component with
@@ -60,7 +68,7 @@ func (g *Graph) Add(name string, cmpt Component) error {
 
 	node, isNode := cmpt.(Node)
 	if isNode {
-		node.initialize(reflect.ValueOf(node))
+		node.initialize(reflect.ValueOf(node), g.channelBufferSize)
 	}
 
 	g.components[name] = cmpt

@@ -27,7 +27,7 @@ func TestBaseNode_catalogOutPorts(t *testing.T) {
 		OutOther  int           `desc:"not a port but starts with Out"`
 	}{}
 
-	n.catalogOutPorts(reflect.ValueOf(n))
+	n.catalogOutPorts(reflect.ValueOf(n), 0)
 
 	if len(n.Outs) > 1 {
 		t.Errorf("expected only 1 port to be cataloged, got %d", len(n.Outs))
