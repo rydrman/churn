@@ -75,7 +75,7 @@ func (c *OutPortCore) handleOne() (wasHandled bool) {
 // coming from this out port
 func (c *OutPortCore) AddReceiver(dest *Port) error {
 
-	destCore, isInput := dest.core.(*InPortCore)
+	destCore, isInput := dest.PortCore.(*InPortCore)
 	if !isInput {
 		return errors.New("destination is not an in port")
 	}

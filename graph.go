@@ -63,7 +63,7 @@ func (g *Graph) Connect(sourcePortPath, destPortPath string) error {
 		return errors.Wrap(ErrPortNotExist, destPortPath)
 	}
 
-	return srcPort.core.AddReceiver(destPort)
+	return srcPort.AddReceiver(destPort)
 
 }
 
@@ -77,7 +77,7 @@ func (g *Graph) GetOutPort(portPath string) *Port {
 	}
 
 	_, _, portName := SplitGraphPath(portPath)
-	return node.Ports().Out(portName)
+	return node.Out(portName)
 
 }
 
@@ -91,7 +91,7 @@ func (g *Graph) GetInPort(portPath string) *Port {
 	}
 
 	_, _, portName := SplitGraphPath(portPath)
-	return node.Ports().In(portName)
+	return node.In(portName)
 
 }
 

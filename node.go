@@ -9,7 +9,14 @@ import (
 // graph execution by exposing any number of input and output
 // ports
 type Node interface {
-	Ports() PortCatalog
+
+	// In returns the in port on this node with the given name,
+	// or nil if no port exists with that name
+	In(name string) *Port
+	// Out returns the out port on this node with the given name,
+	// or nil if no port exists with that name
+	Out(name string) *Port
+
 	initialize(self reflect.Value)
 }
 
@@ -40,8 +47,8 @@ func (n *BaseNode) catalogInPorts(self reflect.Value) {
 		}
 
 		n.Ins = append(n.Ins, &Port{
-			Name: strings.TrimPrefix(name, inPortNamePrefix),
-			core: NewInPortCore(self.Method(i)),
+			Name:     strings.TrimPrefix(name, inPortNamePrefix),
+			PortCore: NewInPortCore(self.Method(i)),
 		})
 
 	}
@@ -78,8 +85,8 @@ func (n *BaseNode) catalogOutPorts(self reflect.Value) {
 
 		name := strings.TrimPrefix(field.Name, outPortNamePrefix)
 		n.Outs = append(n.Outs, &Port{
-			Name: name,
-			core: core,
+			Name:     name,
+			PortCore: core,
 		})
 
 		// NOTE: any previous channel value is blindly

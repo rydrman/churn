@@ -5,21 +5,21 @@ import (
 	"testing"
 )
 
-type intIONode struct {
+type intInNode struct {
 	BaseNode
 }
 
-func (intIONode) InValue(int64) {}
+func (intInNode) InValue(int64) {}
 
 func TestOutPortCore_AddReceiver_InvalidType(t *testing.T) {
 
 	graph := NewGraph()
 	strNode := new(StringNode)
-	intNode := new(intIONode)
+	intNode := new(intInNode)
 	graph.Add("String", strNode)
 	graph.Add("Int", intNode)
 
-	strNode.Out("Value").Core().AddReceiver(intNode.In("Value"))
+	strNode.Out("Value").AddReceiver(intNode.In("Value"))
 
 }
 
@@ -31,7 +31,7 @@ func TestOutPortCore_AddReceiver_ReceiverIn(t *testing.T) {
 
 	valPort := strNode.Out("Value")
 
-	err := valPort.Core().AddReceiver(valPort)
+	err := valPort.AddReceiver(valPort)
 	if err == nil {
 		t.Errorf("expected an error adding input port as a receiver")
 	}

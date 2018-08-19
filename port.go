@@ -8,11 +8,8 @@ package churn
 type Port struct {
 	Name string
 
-	core PortCore
+	PortCore
 }
-
-// Core returns the business logic core of this port
-func (p *Port) Core() PortCore { return p.core }
 
 // PortCore contains the underlying business logic
 // of a port, and is either an In- or OutPortCore.
