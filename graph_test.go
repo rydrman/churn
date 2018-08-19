@@ -15,17 +15,10 @@ func Example() {
 		strNode = new(StringNode)
 	)
 
-	err := graph.Add("MessageSource", strNode)
-	if err != nil {
-		fmt.Println(errors.Wrap(err, "failed to add message source"))
-	}
+	messageSource := graph.SafeAdd("MessageSource", strNode)
+	printer := graph.SafeAdd("Printer", new(PrintNode))
 
-	err = graph.Add("Printer", new(PrintNode))
-	if err != nil {
-		fmt.Println(errors.Wrap(err, "failed to add printer"))
-	}
-
-	err = graph.Connect("MessageSource.Value", "Printer.Message")
+	err := graph.Connect(messageSource+".Value", printer+".Message")
 	if err != nil {
 		fmt.Println(errors.Wrap(err, "failed to connect"))
 	}
@@ -68,6 +61,41 @@ func TestGraph_Add(t *testing.T) {
 	err = g.Add("MyNode", new(StringNode))
 	if !IsNameTaken(err) {
 		t.Errorf("expected ErrNameTaken when adding duplicate node, got %v", err)
+	}
+
+}
+
+func TestGraph_SafeAdd(t *testing.T) {
+
+	graph := NewGraph()
+	node0 := new(StringNode)
+	node1 := new(StringNode)
+	node2 := new(StringNode)
+
+	desired := "Node"
+	node0Name := graph.SafeAdd(desired, node0)
+	node1Name := graph.SafeAdd(desired, node1)
+	node2Name := graph.SafeAdd(desired, node2)
+
+	if node0Name != "Node" {
+		t.Errorf(
+			"expected first node name not to be changed from %q, got %q",
+			desired, node0Name,
+		)
+	}
+
+	if node1Name != "Node1" {
+		t.Errorf(
+			"expected second node name to be changed to %q, got %q",
+			"Node1", node1Name,
+		)
+	}
+
+	if node2Name != "Node2" {
+		t.Errorf(
+			"expected first node name to be changed to %q, got %q",
+			"Node2", node2Name,
+		)
 	}
 
 }

@@ -4,6 +4,7 @@ package churn
 import (
 	"path"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -28,6 +29,22 @@ func NewGraph() *Graph {
 	return &Graph{
 		components: make(map[string]Component),
 	}
+}
+
+// SafeAdd adds the given component to this graph. If a component with
+// 'desiredName' already exists, then an integer will be appended to
+// the end of the name such that if becomes unique. The returned
+// string is the final accepted name of the added node.
+func (g *Graph) SafeAdd(desiredName string, cmpt Component) (name string) {
+
+	name = desiredName
+	err := g.Add(desiredName, cmpt)
+	for count := 1; IsNameTaken(err); count++ {
+		name = desiredName + strconv.Itoa(count)
+		err = g.Add(name, cmpt)
+	}
+	return
+
 }
 
 // Add adds a node to this graph, where 'name' is expected to be unique

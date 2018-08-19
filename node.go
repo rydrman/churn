@@ -114,15 +114,3 @@ func (c PortCatalog) In(name string) *Port {
 func (c PortCatalog) Out(name string) *Port {
 	return c.Outs.FindByName(name)
 }
-
-func (c PortCatalog) copy() PortCatalog {
-
-	dupe := PortCatalog{
-		Ins:  make([]*Port, len(c.Ins)),
-		Outs: make([]*Port, len(c.Outs)),
-	}
-	copy(dupe.Ins, c.Ins)
-	copy(dupe.Outs, c.Outs)
-	return dupe
-
-}
