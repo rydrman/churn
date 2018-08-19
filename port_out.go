@@ -91,3 +91,9 @@ func (c *OutPortCore) AddReceiver(dest *Port) error {
 	return nil
 
 }
+
+func (c *OutPortCore) close() {
+
+	c.channel.Close()
+
+}

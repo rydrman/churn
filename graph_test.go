@@ -3,7 +3,6 @@ package churn
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/pkg/errors"
 )
@@ -24,9 +23,7 @@ func Example() {
 	}
 
 	strNode.OutValue <- "Hello, World!"
-
-	// let the network propagate
-	time.Sleep(1 * time.Millisecond)
+	graph.Close()
 
 	// Output:
 	// Hello, World!

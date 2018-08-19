@@ -154,6 +154,16 @@ func (g *Graph) GetComponent(cmptPath string) Component {
 
 }
 
+// Close ends all node execution and tears down the graph node network
+func (g *Graph) Close() {
+
+	for _, cmpt := range g.components {
+		cmpt.close()
+	}
+	return
+
+}
+
 // BuildGraphPath cleans and construct a valid graph path string
 // from the given components. Any parameter may be an empty string
 // to omit that portion of the path, although relative or partial

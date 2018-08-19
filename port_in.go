@@ -39,19 +39,4 @@ func (c *InPortCore) AddReceiver(*Port) error {
 	return errors.New("AddReceiver called on input port")
 }
 
-// PortSlice provides helper methods for working with
-// slices of ports
-type PortSlice []*Port
-
-// FindByName returns the first port in this slice with the given
-// name, or nil if no port has such a name
-func (p PortSlice) FindByName(name string) *Port {
-
-	for _, port := range p {
-		if name == port.Name {
-			return port
-		}
-	}
-	return nil
-
-}
+func (c *InPortCore) close() {}

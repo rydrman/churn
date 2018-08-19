@@ -35,6 +35,17 @@ func (n *BaseNode) initialize(self reflect.Value) {
 
 }
 
+func (n *BaseNode) close() {
+
+	for _, in := range n.Ins {
+		in.PortCore.close()
+	}
+	for _, out := range n.Outs {
+		out.PortCore.close()
+	}
+
+}
+
 func (n *BaseNode) catalogInPorts(self reflect.Value) {
 
 	selfType := self.Type()
