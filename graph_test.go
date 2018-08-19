@@ -100,6 +100,66 @@ func TestGraph_SafeAdd(t *testing.T) {
 
 }
 
+func TestGraph_GetComponent_SubGraph(t *testing.T) {
+
+	graph := NewGraph()
+	subGraph := NewGraph()
+	node := new(StringNode)
+
+	subGraph.SafeAdd("Component", node)
+	graph.SafeAdd("Sub", subGraph)
+
+	actual := graph.GetComponent("./Sub/Component")
+
+	if actual != node {
+		t.Errorf("expected to lookup component in a sub-graph")
+	}
+
+	unknown := graph.GetComponent("./Unknown/Component")
+	if unknown != nil {
+		t.Errorf("expected lookup in unkown subgraph to return nil, got %v", unknown)
+	}
+
+}
+
+func TestBuildGraphPath(t *testing.T) {
+
+	cases := []struct {
+		loc      string
+		name     string
+		port     string
+		expected string
+	}{
+		{
+			loc:      "loc",
+			name:     "name",
+			port:     "port",
+			expected: "loc/name.port",
+		},
+		{
+			name:     "name",
+			port:     "port",
+			expected: "name.port",
+		},
+		{
+			port:     "port",
+			expected: ".port",
+		},
+		{
+			name:     "name",
+			expected: "name",
+		},
+	}
+
+	for _, c := range cases {
+		actual := BuildGraphPath(c.loc, c.name, c.port)
+		if actual != c.expected {
+			t.Errorf("built path does not match expected:\n got: %q\nwant: %q", actual, c.expected)
+		}
+	}
+
+}
+
 func TestSplitGraphPath_FullPath(t *testing.T) {
 
 	loc, name, port := SplitGraphPath("loc/name.port")

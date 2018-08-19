@@ -123,16 +123,52 @@ func (g *Graph) GetNode(nodePath string) Node {
 
 }
 
+// GetSubGraph returns the sub-graph identified in the given
+// graph path. If it does not exist, or the discovered
+// component is not a sub-graph, then nil is returned
+func (g *Graph) GetSubGraph(graphPath string) *Graph {
+
+	cmpt := g.GetComponent(graphPath)
+	graph, _ := cmpt.(*Graph)
+	return graph
+
+}
+
 // GetComponent returns the component identified in the given
 // graph path, or nil if such a component does not exist
 func (g *Graph) GetComponent(cmptPath string) Component {
 
-	location, name, _ := SplitGraphPath(cmptPath)
+	location, name, port := SplitGraphPath(cmptPath)
 	if location == "." {
 		return g.components[name]
 	}
 
-	panic("sub-graph lookup not supported: " + cmptPath) // TODO: handle sub-graphs
+	parts := strings.Split(location, "/")
+	subGraphName := parts[0]
+	subGraphPath := BuildGraphPath(path.Join(parts[1:]...), name, port)
+	subGraph := g.GetSubGraph(subGraphName)
+	if subGraph == nil {
+		return nil
+	}
+	return subGraph.GetComponent(subGraphPath)
+
+}
+
+// BuildGraphPath cleans and construct a valid graph path string
+// from the given components. Any parameter may be an empty string
+// to omit that portion of the path, although relative or partial
+// paths may only be valid in some contexts
+func BuildGraphPath(location, component, port string) string {
+
+	p := location
+	if location != "" {
+		p = path.Clean(location)
+	}
+	p = path.Join(p, component)
+	if port != "" {
+		p = p + "." + port
+	}
+	return p
 
 }
 
