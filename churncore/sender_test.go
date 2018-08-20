@@ -1,10 +1,45 @@
 package churncore
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/pkg/errors"
 )
+
+func Example() {
+
+	ch := make(chan string)
+	sender, err := NewSender(ch)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	receiver, err := NewReceiver(func(msg string) {
+		fmt.Println(msg)
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	subs, err := sender.Subscribe(receiver)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	ch <- "Hello, World!"
+	ch <- "MESSAGE2"
+
+	time.Sleep(time.Millisecond) // allow the singnals to propagate
+	subs.Close()
+	close(ch)
+
+	// Output:
+	// Hello, World!
+	// MESSAGE2
+
+}
 
 func TestNewSender(t *testing.T) {
 

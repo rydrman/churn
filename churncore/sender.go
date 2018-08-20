@@ -26,7 +26,9 @@ type Sender struct {
 	mutex sync.Mutex
 }
 
-// NewSender creates a new source for messages of the given go data type
+// NewSender creates a new message sender using the given go channel.
+// 'channel' must be receive-able, and the returned Sender will continually
+// consume all channel values until the channel is closed
 func NewSender(channel interface{}) (*Sender, error) {
 
 	chanVal := reflect.ValueOf(channel)
@@ -40,11 +42,20 @@ func NewSender(channel interface{}) (*Sender, error) {
 		return nil, errSendOnly
 	}
 
-	return &Sender{
+	s := &Sender{
 		dataType: chanType.Elem(),
 		channel:  chanVal,
 		subs:     make(map[uuid.UUID]*Subscription),
-	}, nil
+	}
+
+	go func() {
+		alive := true
+		for alive {
+			alive = s.handleOne()
+		}
+	}()
+
+	return s, nil
 
 }
 
@@ -63,9 +74,11 @@ func (s *Sender) Subscribe(r *Receiver) (*Subscription, error) {
 
 	id := uuid.NewV4()
 	subs := &Subscription{
+		sender:   s,
+		receiver: r,
 		onClose: func() {
 			s.mutex.Lock()
-			s.subs[id] = nil
+			delete(s.subs, id)
 			s.mutex.Unlock()
 		},
 	}
@@ -75,5 +88,20 @@ func (s *Sender) Subscribe(r *Receiver) (*Subscription, error) {
 	s.mutex.Unlock()
 
 	return subs, nil
+
+}
+
+// returns false if the underlying channel has been
+// closed or became nil
+func (s *Sender) handleOne() (wasHandled bool) {
+
+	val, ok := s.channel.Recv()
+	if !ok {
+		return ok
+	}
+	for _, sub := range s.subs {
+		sub.receiver.function.Call([]reflect.Value{val})
+	}
+	return true
 
 }
