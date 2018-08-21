@@ -19,3 +19,9 @@ func IsNameTaken(err error) bool {
 func IsPortNotExist(err error) bool {
 	return errors.Cause(err) == ErrPortNotExist
 }
+
+func panicIfError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}

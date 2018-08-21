@@ -9,10 +9,9 @@ import (
 
 func Example() {
 
-	var (
-		graph   = NewGraph()
-		strNode = new(StringNode)
-	)
+	graph := NewGraph()
+	strNode := new(StringNode)
+	defer graph.Close()
 
 	messageSource := graph.SafeAdd("MessageSource", strNode)
 	printer := graph.SafeAdd("Printer", new(PrintNode))
@@ -23,7 +22,6 @@ func Example() {
 	}
 
 	strNode.OutValue <- "Hello, World!"
-	graph.Close()
 
 	// Output:
 	// Hello, World!

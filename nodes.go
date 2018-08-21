@@ -7,7 +7,7 @@ type StringNode struct {
 	BaseNode
 
 	// OutValue is the output port of this node
-	OutValue chan<- string
+	OutValue chan string
 }
 
 // PrintNode is a graph component that prints a string to stdout
@@ -28,7 +28,7 @@ type IntNode struct {
 	BaseNode
 
 	// OutValue is the output port of this node
-	OutValue chan<- int64
+	OutValue chan int64
 }
 
 // FloatNode is a graph component that outputs a single 64-bit float
@@ -36,5 +36,5 @@ type FloatNode struct {
 	BaseNode
 
 	// OutValue is the output port of this node
-	OutValue chan<- float64
+	OutValue chan float64
 }

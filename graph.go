@@ -3,10 +3,11 @@ package churn
 
 import (
 	"path"
-	"reflect"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/rydrman/churn/churncore"
 
 	"github.com/pkg/errors"
 )
@@ -68,7 +69,7 @@ func (g *Graph) Add(name string, cmpt Component) error {
 
 	node, isNode := cmpt.(Node)
 	if isNode {
-		node.initialize(reflect.ValueOf(node), g.channelBufferSize)
+		node.setupBaseNode(node)
 	}
 
 	g.components[name] = cmpt
@@ -88,7 +89,12 @@ func (g *Graph) Connect(sourcePortPath, destPortPath string) error {
 		return errors.Wrap(ErrPortNotExist, destPortPath)
 	}
 
-	return srcPort.AddReceiver(destPort)
+	sender := srcPort.core.(*churncore.Sender)
+	receiver := destPort.core.(*churncore.Receiver)
+
+	_, err := sender.Subscribe(receiver)
+	// TODO: store the subscription for cleanup
+	return err
 
 }
 

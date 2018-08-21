@@ -8,18 +8,9 @@ package churn
 type Port struct {
 	Name string
 
-	PortCore
-}
-
-// PortCore contains the underlying business logic
-// of a port, and is either an In- or OutPortCore.
-//
-// Not all methods apply to all cores, and the underlying
-// type of the core may need to be understood in order to
-// avoid run-time panics.
-type PortCore interface {
-	AddReceiver(*Port) error
-	close()
+	// either a *churncore.Sender or *churncore.Receiver
+	// depending on if this is an in or out port
+	core interface{}
 }
 
 // PortSlice provides helper methods for working with
